@@ -45,6 +45,7 @@ const rest = new REST().setToken(token);
     // The put method is used to fully refresh all commands in the guild with the current set
     const data = await rest.put(
       // Registers commands to a specific guild/server
+      // (run if you want to register commands faster for testing purposes, and comment out the other line)
       // Routes.applicationGuildCommands(clientId, guildId),
 
       // Registers commands globally across all guilds/servers
