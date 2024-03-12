@@ -1,7 +1,7 @@
-const path = require("path");
-const { google } = require("googleapis");
+import path from "path";
+import { google, Auth } from "googleapis";
 
-async function listFiles(auth) {
+async function listFiles(auth: Auth.GoogleAuth) {
   const drive = google.drive({ version: "v3", auth });
   try {
     // List the first 10 files and folders (you can adjust the pageSize)
@@ -10,8 +10,13 @@ async function listFiles(auth) {
       fields: "nextPageToken, files(id, name, mimeType, parents)",
     });
 
+    if (!response.data.files) {
+      console.log("No files found.");
+      return;
+    }
+
     console.log("Files:");
-    response.data.files.forEach((file) => {
+    response.data.files.forEach((file: any) => {
       console.log(
         `Name: ${file.name}, ID: ${file.id}, Parent(s): ${file.parents}`,
       );
@@ -21,16 +26,19 @@ async function listFiles(auth) {
   }
 }
 
-async function moveToFolder({ auth, fileId, folderId, fileName }) {
+async function moveToFolder({
+  auth,
+  fileId,
+  folderId,
+  fileName,
+}: {
+  auth: Auth.GoogleAuth;
+  fileId: string;
+  folderId: string;
+  fileName: string;
+}) {
   const drive = google.drive({ version: "v3", auth });
-  // // Retrieve the existing parents to remove
-  // const file = await drive.files.get({
-  //   fileId: fileId,
-  //   fields: "parents",
-  // });
-
   // Move the file to the new folder
-  // const previousParents = file.data.parents.join(",");
   const files = await drive.files.update({
     fileId: fileId,
     addParents: folderId,
@@ -44,7 +52,13 @@ async function moveToFolder({ auth, fileId, folderId, fileName }) {
   return files.data;
 }
 
-async function createForm({ title, fileName }) {
+async function createForm({
+  title,
+  fileName,
+}: {
+  title: string;
+  fileName: string;
+}) {
   const auth = new google.auth.GoogleAuth({
     keyFile: path.join(__dirname, "..", "credentials.json"),
     scopes: ["https://www.googleapis.com/auth/drive"],
@@ -64,6 +78,9 @@ async function createForm({ title, fileName }) {
     });
 
     const fileId = res.data.formId;
+    if (!fileId) {
+      throw new Error("No form ID was returned from the API");
+    }
     await moveToFolder({ auth, fileId, folderId, fileName });
     return res.data;
   } catch (err) {
@@ -75,4 +92,5 @@ async function createForm({ title, fileName }) {
 if (module === require.main) {
   createForm({ title: "test api", fileName: "test" }).catch(console.error);
 }
-module.exports = createForm;
+
+export default createForm;

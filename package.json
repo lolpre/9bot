@@ -2,11 +2,12 @@
   "name": "9bot",
   "version": "1.0.0",
   "description": "discord bot for :9",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start": "node .",
-    "deploy": "node deploy-commands.js",
-    "test": "echo 🤫🧏"
+    "start": "npm run clean && npx tsc && node dist",
+    "deploy": "npm run clean && npx tsc && node dist/deploy-commands.js",
+    "test": "echo 🤫🧏",
+    "clean": "npx rimraf dist"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,10 @@
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
-    "eslint": "^8.57.0"
+    "@types/node": "^18.13.0",
+    "eslint": "^8.57.0",
+    "prettier": "^2.8.4",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.2"
   }
 }
