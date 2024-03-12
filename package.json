@@ -1,15 +1,16 @@
 {
   "name": "9bot",
   "version": "1.0.0",
-  "description": "discord bot for :9",
+  "description": "discord bot for :9:",
   "main": "dist/index.js",
   "scripts": {
-    "start": "npm run clean && npx tsc && node dist",
-    "deploy": "npm run clean && npx tsc && node dist/deploy-commands.js",
+    "build": "npm run clean && npx tsc",
+    "start": "npm run build && node dist",
+    "deploy": "npm run build && node dist/deploy-commands.js",
     "test": "echo 🤫🧏",
     "clean": "npx rimraf dist"
   },
-  "author": "",
+  "author": "9",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^14.14.1",
