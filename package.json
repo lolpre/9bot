@@ -13,6 +13,7 @@
   "author": "9",
   "license": "ISC",
   "dependencies": {
+    "@seald-io/nedb": "^4.0.4",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "googleapis": "^133.0.0",
