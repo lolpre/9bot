@@ -11,6 +11,12 @@ export interface Question {
 export const DEFAULT_QUESTIONS: Question[] = [
   {
     author: "default",
+    question: "🥺️👉👈 name pls",
+    type: "short",
+    required: true,
+  },
+  {
+    author: "default",
     question: "😈 What's the latest in your life?",
     type: "short",
   },
