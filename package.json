@@ -4,8 +4,9 @@
   "description": "discord bot for :9:",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run clean && npx tsc",
+    "build": "npm run clean && npx tsc && npx tsc-alias",
     "start": "npm run build && node dist",
+    "watch": "npm run clean && npx tsc -w && npx tsc-alias -w",
     "deploy": "npm run build && node dist/deploy-commands.js",
     "test": "echo 🤫🧏",
     "clean": "npx rimraf dist"
@@ -24,6 +25,7 @@
     "eslint": "^8.57.0",
     "prettier": "^2.8.4",
     "rimraf": "^5.0.5",
+    "tsc-alias": "^1.8.8",
     "typescript": "^5.4.2"
   }
 }

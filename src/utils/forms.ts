@@ -1,39 +1,102 @@
 /** A bunch of helper functions for interacting with google drive and forms */
 import path from "path";
 import { google, Auth, forms_v1 } from "googleapis";
-import { DEFAULT_QUESTIONS, Question } from "./types";
+import {
+  DEFAULT_QUESTIONS,
+  Question,
+  FormResponse,
+  NAME_QUESTION,
+} from "./types";
 
-const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
-const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
+export const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
+export const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
 
-/**
- * Lists files and folders in Google Drive.
- *
- * @param auth The Google authentication object.
- */
-export async function listFiles(auth: Auth.GoogleAuth) {
+export async function getFormattedResponses({
+  auth,
+  form,
+}: {
+  auth: Auth.GoogleAuth;
+  form: forms_v1.Schema$Form;
+}) {
+  const questionLookup = form.items!.reduce(
+    (lookup, item) => {
+      lookup[item.questionItem?.question?.questionId!] = item.title!;
+      return lookup;
+    },
+    {} as Record<string, string>,
+  );
+
+  const formResponse = await _getFormResponse({ auth, formId: form.formId! });
+
+  console.log(formResponse);
+
+  return formResponse.responses?.map((response): FormResponse => {
+    let author = undefined;
+    const answers = Object.values(response.answers || {}).map((answer) => {
+      const questionId = answer.questionId!;
+      const question = questionLookup[questionId];
+      const value = answer?.textAnswers?.answers?.[0]?.value!;
+      if (question === NAME_QUESTION.question) {
+        author = value;
+        return undefined;
+      }
+      return { questionId, question, answer: value };
+    });
+
+    return {
+      author,
+      responseId: response.responseId!,
+      createTime: response.createTime || "",
+      lastSubmittedTime: response.lastSubmittedTime || "",
+      answers: answers.filter(
+        (a) => a !== undefined,
+      ) as FormResponse["answers"],
+    };
+  });
+}
+
+async function _getFormResponse({
+  auth,
+  formId,
+}: {
+  auth: Auth.GoogleAuth;
+  formId: string;
+}): Promise<forms_v1.Schema$ListFormResponsesResponse> {
+  const forms = google.forms({ version: "v1", auth });
+  const response = await forms.forms.responses.list({ formId });
+  return response.data;
+}
+
+export async function getMostRecentForm({
+  auth,
+  folderId,
+}: {
+  auth: Auth.GoogleAuth;
+  folderId: string;
+}): Promise<forms_v1.Schema$Form | null> {
   const drive = google.drive({ version: "v3", auth });
-  try {
-    // List the first 10 files and folders (you can adjust the pageSize)
-    const response = await drive.files.list({
-      pageSize: 10,
-      fields: "nextPageToken, files(id, name, mimeType, parents)",
-    });
+  const forms = google.forms({ version: "v1", auth });
+  const filesResponse = await drive.files.list({
+    q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.form' and trashed=false`,
+    fields: "files(id, name, createdTime)",
+    orderBy: "createdTime desc",
+    pageSize: 1, // We only want the most recent file
+  });
 
-    if (!response.data.files) {
-      console.log("No files found.");
-      return;
+  if (
+    filesResponse.data.files?.length &&
+    filesResponse.data.files?.length > 0
+  ) {
+    const recentForm = filesResponse.data.files[0];
+    console.log(
+      `Most recent Google Form: ${recentForm.name} (ID: ${recentForm.id})`,
+    );
+    if (recentForm.id) {
+      const formResponse = await forms.forms.get({ formId: recentForm.id });
+      return formResponse.data;
     }
-
-    console.log("Files:");
-    response.data.files.forEach((file: any) => {
-      console.log(
-        `Name: ${file.name}, ID: ${file.id}, Parent(s): ${file.parents}`,
-      );
-    });
-  } catch (err) {
-    console.error("The API returned an error: " + err);
   }
+  return null;
 }
 
 /**
@@ -147,23 +210,20 @@ export async function updateForm({
     });
   }
 
-  try {
-    const res = await forms.forms.batchUpdate({
-      formId,
-      requestBody: {
-        includeFormInResponse: true,
-        requests: [...extraUpdates, ...questionsToRequests(questions)],
-      },
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error updating form:", err);
-    throw err;
-  }
+  const res = await forms.forms.batchUpdate({
+    formId,
+    requestBody: {
+      includeFormInResponse: true,
+      requests: [...extraUpdates, ...questionsToRequests(questions)],
+    },
+  });
+  return res.data;
 }
 
 /**
  * Creates a new Google Form with the specified title, questions, and description.
+ * First has to create an empty form, then moves it into the shared folder,
+ * and finally updates it with the description and questions.
  *
  * @param title The title of the form.
  * @param fileName The name of the file.
@@ -191,45 +251,57 @@ export async function createForm({
     auth,
   });
 
-  try {
-    const res = await forms.forms.create({
-      requestBody: { info: { title } } as forms_v1.Schema$Form,
-    });
+  const res = await forms.forms.create({
+    requestBody: { info: { title } } as forms_v1.Schema$Form,
+  });
 
-    const formId = res.data.formId;
+  const formId = res.data.formId;
 
-    if (!formId) {
-      throw new Error("No form ID was returned from the API");
-    }
-
-    await moveFormToFolder({
-      auth,
-      fileId: formId,
-      folderId: SHARED_FOLDER_ID,
-      fileName,
-    });
-
-    const form = await updateForm({
-      auth,
-      formId,
-      questions,
-      description,
-    });
-
-    return form;
-  } catch (err) {
-    console.error("An error occurred while creating the form: " + err);
-    throw err; // Rethrow the error to handle it at a higher level
+  if (!formId) {
+    throw new Error("No form ID was returned from the API");
   }
+
+  await moveFormToFolder({
+    auth,
+    fileId: formId,
+    folderId: SHARED_FOLDER_ID,
+    fileName,
+  });
+
+  const form = await updateForm({
+    auth,
+    formId,
+    questions,
+    description,
+  });
+
+  return form;
+}
+
+export function getAuth() {
+  return new google.auth.GoogleAuth({
+    keyFile: path.join(__dirname, "../../credentials.json"),
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
 }
 
 if (module === require.main) {
-  createForm({
-    title: "api test form",
-    fileName: "test_form",
-    questions: DEFAULT_QUESTIONS,
-    description: "bruh bruh bruh",
-  })
-    .then(console.log)
+  // createForm({
+  //   title: "api test form",
+  //   fileName: "test_form",
+  //   questions: DEFAULT_QUESTIONS,
+  //   description: "bruh bruh bruh",
+  // })
+  //   .then(console.log)
+  //   .catch(console.error);
+  const auth = getAuth();
+  getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID })
+    .then((form) => {
+      getFormattedResponses({ auth, form: form! })
+        .then((output) => {
+          console.log(JSON.stringify(output, null, 2));
+        })
+        .catch(console.error);
+    })
     .catch(console.error);
 }

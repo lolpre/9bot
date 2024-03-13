@@ -42,7 +42,7 @@ const rest = new REST().setToken(config.token);
     const data: any = await rest.put(
       // Registers commands to a specific guild/server
       // (run if you want to register commands faster for testing purposes, and comment out the other line)
-      // Routes.applicationGuildCommands(clientId, guildId),
+      // Routes.applicationGuildCommands(config.clientId, config.guildId),
 
       // Registers commands globally across all guilds/servers
       Routes.applicationCommands(config.clientId),
