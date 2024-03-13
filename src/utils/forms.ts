@@ -11,6 +11,25 @@ import {
 export const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
 export const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
 
+async function _getRawFormResponse({
+  auth,
+  formId,
+}: {
+  auth: Auth.GoogleAuth;
+  formId: string;
+}): Promise<forms_v1.Schema$ListFormResponsesResponse> {
+  const forms = google.forms({ version: "v1", auth });
+  const response = await forms.forms.responses.list({ formId });
+  return response.data;
+}
+
+export function getAuth() {
+  return new google.auth.GoogleAuth({
+    keyFile: path.join(__dirname, "../../credentials.json"),
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
+}
+
 export async function getFormattedResponses({
   auth,
   form,
@@ -26,9 +45,10 @@ export async function getFormattedResponses({
     {} as Record<string, string>,
   );
 
-  const formResponse = await _getFormResponse({ auth, formId: form.formId! });
-
-  console.log(formResponse);
+  const formResponse = await _getRawFormResponse({
+    auth,
+    formId: form.formId!,
+  });
 
   return formResponse.responses?.map((response): FormResponse => {
     let author = undefined;
@@ -53,18 +73,6 @@ export async function getFormattedResponses({
       ) as FormResponse["answers"],
     };
   });
-}
-
-async function _getFormResponse({
-  auth,
-  formId,
-}: {
-  auth: Auth.GoogleAuth;
-  formId: string;
-}): Promise<forms_v1.Schema$ListFormResponsesResponse> {
-  const forms = google.forms({ version: "v1", auth });
-  const response = await forms.forms.responses.list({ formId });
-  return response.data;
 }
 
 export async function getMostRecentForm({
@@ -225,6 +233,7 @@ export async function updateForm({
  * First has to create an empty form, then moves it into the shared folder,
  * and finally updates it with the description and questions.
  *
+ * @param auth The Google authentication object.
  * @param title The title of the form.
  * @param fileName The name of the file.
  * @param questions The array of questions to add to the form.
@@ -232,20 +241,18 @@ export async function updateForm({
  * @returns The created form data.
  */
 export async function createForm({
+  auth,
   title,
   fileName,
   questions,
   description,
 }: {
+  auth: Auth.GoogleAuth;
   title: string;
   fileName: string;
   questions: Question[];
   description?: string;
 }) {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: path.join(__dirname, "../../credentials.json"),
-    scopes: ["https://www.googleapis.com/auth/drive"],
-  });
   const forms = google.forms({
     version: "v1",
     auth,
@@ -278,15 +285,10 @@ export async function createForm({
   return form;
 }
 
-export function getAuth() {
-  return new google.auth.GoogleAuth({
-    keyFile: path.join(__dirname, "../../credentials.json"),
-    scopes: ["https://www.googleapis.com/auth/drive"],
-  });
-}
-
 if (module === require.main) {
+  const auth = getAuth();
   // createForm({
+  //   auth,
   //   title: "api test form",
   //   fileName: "test_form",
   //   questions: DEFAULT_QUESTIONS,
@@ -294,7 +296,6 @@ if (module === require.main) {
   // })
   //   .then(console.log)
   //   .catch(console.error);
-  const auth = getAuth();
   getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID })
     .then((form) => {
       getFormattedResponses({ auth, form: form! })
