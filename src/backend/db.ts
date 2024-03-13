@@ -1,10 +1,5 @@
 import Datastore from '@seald-io/nedb';
-import { Question } from '../models/question'
-
-export async function greet(db: Datastore): Promise<void> {
-    await db.insertAsync([{ a: 5 }, { a: 42 }, { a: 5 }])
-    const docs = await db.findAsync({ a: 5 })
-}
+import { Question } from '../utils/types'
 
 export class QuestionBank {
     private db: Datastore;
@@ -13,9 +8,9 @@ export class QuestionBank {
       this.db = db;
     }
 
-    public async get_question_by_title(title: String): Promise<Question> {
+    public async get_question(title: String): Promise<Question> {
         return new Promise<Question>((resolve, reject) => {
-            this.db.findOne({title: title}, (err: any, doc: Question) => {
+            this.db.findOne({question: title}, (err: any, doc: Question) => {
               if (err) {
                 return reject(err);
               }
@@ -37,7 +32,7 @@ export class QuestionBank {
 
     public async update_question(title: String): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            this.db.update({title: title}, (err: any, numberOfUpdated: number) => {
+            this.db.update({question: title}, (err: any, numberOfUpdated: number) => {
                 if (err) {
                   return reject(err);
                 }
@@ -48,7 +43,7 @@ export class QuestionBank {
 
     public async delete_question(title: String): Promise<number> {
         return new Promise<number>((resolve, reject) => {
-            this.db.remove({title: title}, (err: any, numberOfUpdated: number) => {
+            this.db.remove({question: title}, (err: any, numberOfUpdated: number) => {
                 if (err) {
                   return reject(err);
                 }

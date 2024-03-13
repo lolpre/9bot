@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import Datastore from '@seald-io/nedb';
 import { QuestionBank } from "./backend/db";
-import { Question } from "./models/question"
+import { Question, DEFAULT_QUESTIONS } from "./utils/types"
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -17,10 +17,9 @@ const questionBank = new QuestionBank(db);
 // TODO: integrate with google forms api or discord modal
 // Example db usage. Comment out to test
 // (async () => {
-//   await questionBank.insert_question(new Question("title", "text"));
-//   const doc = await questionBank.get_question_by_title("title");
-//   console.log(doc.body);
-//   console.log(doc.title);
+//   await questionBank.insert_question(DEFAULT_QUESTIONS[0]);
+//   const doc = await questionBank.get_question("🥺️👉👈 name pls");
+//   console.log(doc);
 // })();
 
 
