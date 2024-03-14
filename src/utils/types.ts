@@ -13,6 +13,7 @@ export interface FormResponse {
   responseId: string;
   createTime: string;
   lastSubmittedTime: string;
+  newQuestions: string[];
   answers: {
     questionId: string;
     question: string;
@@ -27,27 +28,34 @@ export const NAME_QUESTION: Question = {
   required: true,
 };
 
+export const NEW_QUESTION: Question = {
+  author: "default",
+  question: "❓ Questions for Next Issue?",
+  description: "You can add multiple separated by ';' (semicolon).",
+  type: "short",
+};
+
+export const PLACEHOLDER_QUESTION: Question = {
+  author: "default",
+  question: "😈 What's the latest in your life?",
+  type: "paragraph",
+};
+
 export const DEFAULT_QUESTIONS: Question[] = [
-  NAME_QUESTION,
   {
     author: "default",
-    question: "😈 What's the latest in your life?",
+    question: "⛅️ One Good Thing",
     type: "paragraph",
   },
   {
     author: "default",
-    question: "⛅️ One Good Thing",
-    type: "short",
-  },
-  {
-    author: "default",
     question: "📣 Shout-Outs",
-    type: "short",
+    type: "paragraph",
   },
   {
     author: "default",
     question: "📧 @ someone",
-    type: "short",
+    type: "paragraph",
   },
   {
     author: "default",
@@ -57,7 +65,7 @@ export const DEFAULT_QUESTIONS: Question[] = [
   {
     author: "default",
     question: "👀 Check it Out",
-    type: "short",
+    type: "paragraph",
   },
   {
     author: "default",
@@ -65,10 +73,5 @@ export const DEFAULT_QUESTIONS: Question[] = [
     description: "Enter the URL of an image to share.",
     type: "short", //"image", (image not supported by their api)
   },
-  {
-    author: "default",
-    question: "❓ Questions for Next Issue?",
-    description: "You can add multiple separated by ';' (semicolon).",
-    type: "short",
-  },
+  NEW_QUESTION,
 ];

@@ -8,7 +8,7 @@ import {
 
 const printRecentResponses = {
   data: new SlashCommandBuilder()
-    .setName("print_recent_responses")
+    .setName("responses")
     .setDescription(
       "Prints responses to the most recent google form (test command)",
     ),

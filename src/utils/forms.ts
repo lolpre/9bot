@@ -1,11 +1,13 @@
 /** A bunch of helper functions for interacting with google drive and forms */
 import path from "path";
-import { google, Auth, forms_v1 } from "googleapis";
+import { google, Auth, forms_v1, drive_v3 } from "googleapis";
 import {
   DEFAULT_QUESTIONS,
   Question,
   FormResponse,
   NAME_QUESTION,
+  NEW_QUESTION,
+  PLACEHOLDER_QUESTION,
 } from "./types";
 
 export const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
@@ -30,6 +32,55 @@ export function getAuth() {
   });
 }
 
+export async function countGoogleForms({ auth }: { auth: Auth.GoogleAuth }) {
+  const drive = google.drive({ version: "v3", auth });
+  let nextPageToken = undefined;
+  let count = 0;
+
+  do {
+    try {
+      const response = (await drive.files.list({
+        q: `'${SHARED_FOLDER_ID}' in parents and mimeType='application/vnd.google-apps.form' and trashed=false`,
+        spaces: "drive",
+        fields: "nextPageToken, files(id, name)",
+        pageToken: nextPageToken,
+      })) as { data: drive_v3.Schema$FileList };
+
+      nextPageToken = response.data.nextPageToken;
+      const files = response.data.files;
+      if (files) {
+        count += files.length;
+      }
+    } catch (error) {
+      nextPageToken = undefined;
+    }
+  } while (nextPageToken);
+
+  return count;
+}
+
+export function getNewQuestions(formResponses?: FormResponse[]) {
+  const newQuestions: Question[] = [];
+
+  if (formResponses) {
+    for (const response of formResponses) {
+      for (const question of response.newQuestions) {
+        newQuestions.push({
+          author: response.author || "unknown",
+          question,
+          type: "short",
+        });
+      }
+    }
+  }
+
+  if (newQuestions.length === 0) {
+    newQuestions.push(PLACEHOLDER_QUESTION);
+  }
+
+  return [NAME_QUESTION, ...newQuestions, ...DEFAULT_QUESTIONS];
+}
+
 export async function getFormattedResponses({
   auth,
   form,
@@ -51,6 +102,7 @@ export async function getFormattedResponses({
   });
 
   return formResponse.responses?.map((response): FormResponse => {
+    const newQuestions: string[] = [];
     let author = undefined;
     const answers = Object.values(response.answers || {}).map((answer) => {
       const questionId = answer.questionId!;
@@ -60,11 +112,16 @@ export async function getFormattedResponses({
         author = value;
         return undefined;
       }
+      if (question === NEW_QUESTION.question) {
+        newQuestions.push(...value.split(";").map((q) => q.trim()));
+        return undefined;
+      }
       return { questionId, question, answer: value };
     });
 
     return {
       author,
+      newQuestions,
       responseId: response.responseId!,
       createTime: response.createTime || "",
       lastSubmittedTime: response.lastSubmittedTime || "",
@@ -291,7 +348,7 @@ if (module === require.main) {
   //   auth,
   //   title: "api test form",
   //   fileName: "test_form",
-  //   questions: DEFAULT_QUESTIONS,
+  //   questions: getNewQuestions(),
   //   description: "bruh bruh bruh",
   // })
   //   .then(console.log)
