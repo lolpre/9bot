@@ -1,10 +1,26 @@
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { EmbedBuilder, SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import {
   getMostRecentForm,
   getFormattedResponses,
   getAuth,
   SHARED_FOLDER_ID,
 } from "@/utils/forms";
+import { FormResponse } from "@/utils/types";
+
+const createEmbed = (res: FormResponse) => {
+  const embed = new EmbedBuilder()
+    .setColor(0xff0077)
+    .setTitle(`${res.author}`)
+    .setAuthor({ name: '9bot' })
+    .setTimestamp()
+    .setFooter({ text: '9bot!!! 😼' });
+
+  for (const answers of res.answers) {
+    embed.addFields({ name: `${answers.question}`, value: `${answers.answer}` },);
+  }
+
+  return embed;
+}
 
 const printRecentResponses = {
   data: new SlashCommandBuilder()
@@ -29,7 +45,7 @@ const printRecentResponses = {
     }
     for (const response of responses) {
       await interaction.followUp(
-        `\`\`\`${JSON.stringify(response, null, 2)}\`\`\``,
+        { embeds: [createEmbed(response)] }
       );
     }
     return;
