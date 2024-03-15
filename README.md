@@ -7,7 +7,7 @@ bootleg letterloop
 L
 
 > [!WARNING]
-> Please install the pre-commit hook https://pre-commit.com/
+> Please install the pre-commit hook <https://pre-commit.com/>
 
 ## Commands
 
@@ -20,7 +20,7 @@ L
 
 ## Cock
 
-```
+```text
 ⠀⠀⠀⠀⠀⠀⠀⣠⣤⣤⣤⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⢰⡿⠋⠁⠀⠀⠈⠉⠙⠻⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⢀⣿⠇⠀⢀⣴⣶⡾⠿⠿⠿⢿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
