@@ -4,7 +4,10 @@ import {
   getFormattedResponses,
   getMostRecentForm,
 } from "./forms";
-import { DEFAULT_QUESTIONS, FormResponse } from "./types";
+import { FormResponse } from "./types";
+import { DEFAULT_QUESTIONS, PHOTO_QUESTION } from "@/defaults";
+
+const URL_REGEX = /https?:\/\/[^\s]+(\.[^\s]+)*/g;
 
 // Function to generate markdown content from form responses
 export function generateMarkdownFromResponses({
@@ -54,16 +57,23 @@ export function generateMarkdownFromResponses({
     `---\n\n`;
 
   // Generate markdown with two sections
-  let questionsOfWeekContent = "## *Questions of the Week*\n\n";
-  let newsletterContent = "## *Newsletter*\n\n";
+  let questionsOfWeekContent = "## ***Questions of the Week***\n\n";
+  let newsletterContent = "## ***Newsletter***\n\n";
 
   sortedQuestions.forEach(({ question, answers }) => {
     let questionContent = `### ${question}\n\n`;
 
-    answers.forEach(({ author, answer }, index) => {
+    answers.forEach(({ author, answer }) => {
       const authorText = author ? `${author}` : "Anonymous";
       questionContent += `> **${authorText}**: ${answer}\n> \n`;
     });
+
+    if (question === PHOTO_QUESTION.question) {
+      questionContent = questionContent.replace(
+        URL_REGEX,
+        (url) => `![${url}](${url})`
+      );
+    }
 
     if (defaultQuestions.includes(question)) {
       newsletterContent += questionContent + "<br/>\n\n";

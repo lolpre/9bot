@@ -1,14 +1,13 @@
 /** A bunch of helper functions for interacting with google drive and forms */
 import path from "path";
 import { google, Auth, forms_v1, drive_v3 } from "googleapis";
+import { Question, FormResponse } from "./types";
 import {
   DEFAULT_QUESTIONS,
-  Question,
-  FormResponse,
   NAME_QUESTION,
   NEW_QUESTION,
   PLACEHOLDER_QUESTION,
-} from "./types";
+} from "@/defaults";
 
 const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
 const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
