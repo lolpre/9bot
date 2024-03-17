@@ -4,9 +4,9 @@
   "description": "discord bot for :9:",
   "main": "dist/index.js",
   "scripts": {
-    "build": "npm run clean && npx tsc && npx tsc-alias",
+    "build": "npx tsc && npx tsc-alias",
     "start": "npm run build && node dist",
-    "watch": "npm run clean && npx tsc -w && npx tsc-alias -w",
+    "watch": "npx tsc -w && npx tsc-alias -w",
     "deploy": "npm run build && node dist/deploy-commands.js",
     "test": "echo 🤫🧏",
     "clean": "npx rimraf dist",

@@ -161,6 +161,18 @@ export async function getMostRecentForm({
   return null;
 }
 
+export async function getForm({
+  auth,
+  formId,
+}: {
+  auth: Auth.GoogleAuth;
+  formId: string;
+}): Promise<forms_v1.Schema$Form> {
+  const forms = google.forms({ version: "v1", auth });
+  const formResponse = await forms.forms.get({ formId });
+  return formResponse.data;
+}
+
 /**
  * Moves a Google Form to a specified folder.
  *

@@ -1,4 +1,9 @@
-import { getAuth, getFormattedResponses, getMostRecentForm } from "./forms";
+import {
+  getAuth,
+  getForm,
+  getFormattedResponses,
+  getMostRecentForm,
+} from "./forms";
 import { DEFAULT_QUESTIONS, FormResponse } from "./types";
 
 // Function to generate markdown content from form responses
@@ -41,7 +46,12 @@ export function generateMarkdownFromResponses({
     );
   });
 
-  const description = `# 9Loop Newsletter\n### Issue No.${issueNumber} · ${dateStr}\n---\n\n`;
+  const description =
+    `---\n` +
+    `title: 9Loop Newsletter No.${issueNumber}\n` +
+    `date: ${dateStr}\n` +
+    `description: Issue No. ${issueNumber}\n` +
+    `---\n\n`;
 
   // Generate markdown with two sections
   let questionsOfWeekContent = "## *Questions of the Week*\n\n";
@@ -56,19 +66,19 @@ export function generateMarkdownFromResponses({
     });
 
     if (defaultQuestions.includes(question)) {
-      newsletterContent += questionContent;
+      newsletterContent += questionContent + "<br/>\n\n";
     } else {
-      questionsOfWeekContent += questionContent;
+      questionsOfWeekContent += questionContent + "<br/>\n\n";
     }
   });
 
   // Combine both sections into a single markdown content
-  return `${description}${questionsOfWeekContent}---\n\n${newsletterContent}`;
+  return `${description}${questionsOfWeekContent}${newsletterContent}`;
 }
 
 if (module === require.main) {
   const auth = getAuth();
-  getMostRecentForm({ auth })
+  getForm({ auth, formId: "1YNRxlyDm5j3jjIBe9ZECZ2f3Btd9rXjAqWeC4ceRzis" })
     .then((form) => {
       getFormattedResponses({ auth, form: form! })
         .then((output) => {
@@ -76,7 +86,7 @@ if (module === require.main) {
             generateMarkdownFromResponses({
               responses: output!,
               issueNumber: 1,
-              dateStr: "July 1, 2021",
+              dateStr: "2024-03-17",
             })
           );
         })

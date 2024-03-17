@@ -1,10 +1,10 @@
 ---
-title: 9Loop Newsletter No.0
-date: 2024-03-17
-description: Issue No. 0
+title: 9Loop Newsletter No.1
+date: July 1, 2021
+description: Issue No. 1
 ---
 
-## _Questions of the Week_
+## *Questions of the Week*
 
 ### 😈 What's the latest in your life?
 
@@ -13,8 +13,10 @@ description: Issue No. 0
 > **juwuian**: my life
 >
 > **fake julian**: asdf
+>
+<br/>
 
-## _Newsletter_
+## *Newsletter*
 
 ### ⛅️ One Good Thing
 
@@ -24,7 +26,7 @@ description: Issue No. 0
 >
 > **fake julian**: asdfasdfsdaf
 >
-> <br/>
+<br/>
 
 ### 📣 Shout-Outs
 
@@ -34,7 +36,7 @@ description: Issue No. 0
 >
 > **fake julian**: asdfasdsgasfg
 >
-> <br/>
+<br/>
 
 ### 📧 @ someone
 
@@ -44,7 +46,7 @@ description: Issue No. 0
 >
 > **fake julian**: asdfasdf
 >
-> <br/>
+<br/>
 
 ### 💭 On Your Mind
 
@@ -54,22 +56,24 @@ description: Issue No. 0
 >
 > **fake julian**: sadfgasdfgsajglasfgjk
 >
-> <br/>
+<br/>
 
 ### 👀 Check it Out
 
-> **yeeb**: https://www.youtube.com/watch?v=IV9OHMsgGcs
+> **yeeb**: aaaaaaaa
 >
 > **juwuian**: :)
 >
 > **fake julian**: asdofgjdfgjoasdfgjodfigjodfigjodfjgdfjgdfsjgdfjigjdfgjdfgjosdfjgosdfjigj
 >
-> <br/>
+<br/>
 
 ### 📸 Photo Wall
 
-> **yeeb**: ![](https://i.kym-cdn.com/entries/icons/mobile/000/037/349/Screenshot_14.jpg)
+> **yeeb**: aoeuaoeuaoeuoeauaoe
 >
 > **juwuian**: no
 >
 > **fake julian**: asdfogjasdfoig
+>
+<br/>
