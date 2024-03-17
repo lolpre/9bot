@@ -10,8 +10,8 @@ import {
   PLACEHOLDER_QUESTION,
 } from "./types";
 
-export const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
-export const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
+const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
+const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
 
 async function _getRawFormResponse({
   auth,
@@ -134,10 +134,10 @@ export async function getFormattedResponses({
 
 export async function getMostRecentForm({
   auth,
-  folderId,
+  folderId = SHARED_FOLDER_ID,
 }: {
   auth: Auth.GoogleAuth;
-  folderId: string;
+  folderId?: string;
 }): Promise<forms_v1.Schema$Form | null> {
   const drive = google.drive({ version: "v3", auth });
   const forms = google.forms({ version: "v1", auth });

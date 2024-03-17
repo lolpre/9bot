@@ -3,7 +3,6 @@ import {
   getMostRecentForm,
   getFormattedResponses,
   getAuth,
-  SHARED_FOLDER_ID,
   getNewQuestions,
   createForm,
   countGoogleForms,
@@ -26,7 +25,6 @@ const newIssue = {
 
     const mostRecentForm = await getMostRecentForm({
       auth,
-      folderId: SHARED_FOLDER_ID,
     });
     if (mostRecentForm) {
       console.log("Found most recent form", mostRecentForm.formId);

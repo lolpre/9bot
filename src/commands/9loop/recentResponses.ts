@@ -1,9 +1,12 @@
-import { EmbedBuilder, SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import {
+  EmbedBuilder,
+  SlashCommandBuilder,
+  ChatInputCommandInteraction,
+} from "discord.js";
 import {
   getMostRecentForm,
   getFormattedResponses,
   getAuth,
-  SHARED_FOLDER_ID,
 } from "@/utils/forms";
 import { FormResponse } from "@/utils/types";
 
@@ -11,16 +14,19 @@ const createEmbed = (res: FormResponse) => {
   const embed = new EmbedBuilder()
     .setColor(0xff0077)
     .setTitle(`${res.author}`)
-    .setAuthor({ name: '9bot' })
+    .setAuthor({ name: "9bot" })
     .setTimestamp()
-    .setFooter({ text: '9bot!!! 😼' });
+    .setFooter({ text: "9bot!!! 😼" });
 
   for (const answers of res.answers) {
-    embed.addFields({ name: `${answers.question}`, value: `${answers.answer}` },);
+    embed.addFields({
+      name: `${answers.question}`,
+      value: `${answers.answer}`,
+    });
   }
 
   return embed;
-}
+};
 
 const printRecentResponses = {
   data: new SlashCommandBuilder()
@@ -33,7 +39,7 @@ const printRecentResponses = {
     await interaction.deferReply();
 
     const auth = getAuth();
-    const form = await getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID });
+    const form = await getMostRecentForm({ auth });
     if (!form) {
       await interaction.followUp("No form found");
       return;
@@ -44,9 +50,7 @@ const printRecentResponses = {
       return;
     }
     for (const response of responses) {
-      await interaction.followUp(
-        { embeds: [createEmbed(response)] }
-      );
+      await interaction.followUp({ embeds: [createEmbed(response)] });
     }
     return;
   },
