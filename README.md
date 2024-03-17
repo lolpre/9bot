@@ -2,12 +2,11 @@
 
 bootleg letterloop
 
+https://lolpre.github.io/9bot/
+
 ## Setup
 
 L
-
-> [!WARNING]
-> Please install the pre-commit hook <https://pre-commit.com/>
 
 ## Commands
 
