@@ -2,10 +2,10 @@ import { Client, Collection, GatewayIntentBits } from "discord.js";
 import config from "../config.json";
 import fs from "fs";
 import path from "path";
-import Datastore from '@seald-io/nedb';
+import Datastore from "@seald-io/nedb";
 import { QuestionBank } from "./backend/db";
-import { Question, DEFAULT_QUESTIONS } from "./utils/types"
-import { CronJob } from "cron"
+import { Question, DEFAULT_QUESTIONS } from "./utils/types";
+import { CronJob } from "cron";
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 client.commands = new Collection();
@@ -23,17 +23,16 @@ const questionBank = new QuestionBank(db);
 //   console.log(doc);
 // })();
 
-
 // TODO: Create CronJob manager to manage all cronjobs
-const cronJob = new CronJob('* * * * *', async () => {
+const cronJob = new CronJob("* * * * *", async () => {
   try {
     await console.log("every minute");
   } catch (e) {
     console.error(e);
   }
 });
- // Start job
- if (!cronJob.running) {
+// Start job
+if (!cronJob.running) {
   cronJob.start();
 }
 

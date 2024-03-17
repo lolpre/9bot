@@ -32,7 +32,7 @@ const printRecentResponses = {
   data: new SlashCommandBuilder()
     .setName("responses")
     .setDescription(
-      "Prints responses to the most recent google form (test command)",
+      "Prints responses to the most recent google form (test command)"
     ),
 
   async execute(interaction: ChatInputCommandInteraction) {

@@ -9,10 +9,19 @@
     "watch": "npm run clean && npx tsc -w && npx tsc-alias -w",
     "deploy": "npm run build && node dist/deploy-commands.js",
     "test": "echo 🤫🧏",
-    "clean": "npx rimraf dist"
+    "clean": "npx rimraf dist",
+    "prepare": "simple-git-hooks"
   },
   "author": "9",
-  "license": "ISC",
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@seald-io/nedb": "^4.0.4",
     "cron": "^3.1.6",
@@ -25,9 +34,13 @@
   "devDependencies": {
     "@types/cron": "^2.4.0",
     "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
     "eslint": "^8.57.0",
+    "lint-staged": "^15.2.2",
     "prettier": "^2.8.4",
     "rimraf": "^5.0.5",
+    "simple-git-hooks": "^2.11.0",
     "tsc-alias": "^1.8.8",
     "typescript": "^5.4.2"
   }

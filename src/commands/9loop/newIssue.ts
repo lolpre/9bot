@@ -47,7 +47,7 @@ const newIssue = {
     }
 
     await interaction.followUp(
-      `Successfully created 9Loop Newsletter Issue #${issueNumber}. Link: ${form.form?.responderUri}`,
+      `Successfully created 9Loop Newsletter Issue #${issueNumber}. Link: ${form.form?.responderUri}`
     );
     return;
   },

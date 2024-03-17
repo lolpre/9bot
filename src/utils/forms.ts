@@ -88,13 +88,10 @@ export async function getFormattedResponses({
   auth: Auth.GoogleAuth;
   form: forms_v1.Schema$Form;
 }) {
-  const questionLookup = form.items!.reduce(
-    (lookup, item) => {
-      lookup[item.questionItem?.question?.questionId!] = item.title!;
-      return lookup;
-    },
-    {} as Record<string, string>,
-  );
+  const questionLookup = form.items!.reduce((lookup, item) => {
+    lookup[item.questionItem?.question?.questionId ?? ""] = item.title!;
+    return lookup;
+  }, {} as Record<string, string>);
 
   const formResponse = await _getRawFormResponse({
     auth,
@@ -107,7 +104,7 @@ export async function getFormattedResponses({
     const answers = Object.values(response.answers || {}).map((answer) => {
       const questionId = answer.questionId!;
       const question = questionLookup[questionId];
-      const value = answer?.textAnswers?.answers?.[0]?.value!;
+      const value = answer?.textAnswers?.answers?.[0]?.value ?? "";
       if (question === NAME_QUESTION.question) {
         author = value;
         return undefined;
@@ -126,7 +123,7 @@ export async function getFormattedResponses({
       createTime: response.createTime || "",
       lastSubmittedTime: response.lastSubmittedTime || "",
       answers: answers.filter(
-        (a) => a !== undefined,
+        (a) => a !== undefined
       ) as FormResponse["answers"],
     };
   });
@@ -154,7 +151,7 @@ export async function getMostRecentForm({
   ) {
     const recentForm = filesResponse.data.files[0];
     console.log(
-      `Most recent Google Form: ${recentForm.name} (ID: ${recentForm.id})`,
+      `Most recent Google Form: ${recentForm.name} (ID: ${recentForm.id})`
     );
     if (recentForm.id) {
       const formResponse = await forms.forms.get({ formId: recentForm.id });
@@ -207,7 +204,7 @@ export async function moveFormToFolder({
  * @returns An array of form requests.
  */
 export function questionsToRequests(
-  question: Question[],
+  question: Question[]
 ): forms_v1.Schema$Request[] {
   return question.map((q, index): forms_v1.Schema$Request => {
     let questionData: forms_v1.Schema$Question | undefined = undefined;

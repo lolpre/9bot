@@ -77,7 +77,7 @@ if (module === require.main) {
               responses: output!,
               issueNumber: 1,
               dateStr: "July 1, 2021",
-            }),
+            })
           );
         })
         .catch(console.error);
