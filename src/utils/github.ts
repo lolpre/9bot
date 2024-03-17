@@ -4,6 +4,7 @@ import { getAuth, getForm, getFormattedResponses } from "./forms";
 import { generateMarkdownFromResponses } from "./markdown";
 import { format } from "date-fns";
 import { Auth } from "googleapis";
+import { Base64 } from "js-base64";
 
 export async function uploadIssue({
   auth,
@@ -31,7 +32,7 @@ export async function uploadIssue({
     owner: "lolpre",
     repo: "9bot",
     path: `9loop/source/_posts/${fileName}.md`,
-    content,
+    content: Base64.encode(content), // cant use btoa because of emojis
     message,
     author: {
       name: `9bot`,
