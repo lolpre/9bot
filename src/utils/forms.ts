@@ -11,6 +11,8 @@ import {
 
 const SHARED_FOLDER_ID = "1YNN4309aT7pAtursd7G8OIrF-iQbC7_d";
 const IMAGE_FOLDER_ID = "1L9xOZlo986jHJOMZTjd4fj29-rXuD0xx";
+const SPREAD_SHEET_NAME = "9Bot";
+const CADENCE_SHEET_NAME = "Cadence Data";
 
 async function _getRawFormResponse({
   auth,
@@ -292,6 +294,148 @@ export async function updateForm({
   });
   return res.data;
 }
+/**
+ * Get current cadence
+ *
+ *@param auth The Google authentication object.
+ */
+// TO-DO expand this to handle multiple guild+channel cadence
+export async function getCadence({
+  auth,
+}: {
+  auth: Auth.GoogleAuth;
+}) : Promise<number> {
+  const sheetService = google.sheets({version: 'v4', auth});
+  const drive = google.drive({version: 'v3', auth});
+  const response = await drive.files.list({
+    q: `name='${SPREAD_SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet'`,
+    fields: 'files(id, name)',
+  });
+
+  const files = response.data.files;
+  if (files && files.length > 0) {
+    const sheetID = files[0].id!
+    const response = await sheetService.spreadsheets.values.get({
+      spreadsheetId: sheetID,
+      range: `${CADENCE_SHEET_NAME}!C1`,
+  });
+    return parseInt(response.data.values?.[0]?.[0]); // response.data.values in the form of [[ cadence ]]
+  } else {
+    return 0;
+  }
+
+
+}
+
+
+/**
+ * Update the current cadence
+ *
+ * @param auth The Google authentication object.
+ * @param guildID The ID of the guild
+ * @param channelID The ID of the channel
+ * @param newCadence Days between issues
+ */
+// TO-DO expand this to handle multiple guild+channel cadence
+export async function updateCadence({
+  auth,
+  newCadence,
+  guildID,
+  channelID
+}: {
+  auth: Auth.GoogleAuth;
+  newCadence: number;
+  guildID: string;
+  channelID: string;
+}) {
+  const sheetService = google.sheets({version: 'v4', auth});
+  const drive = google.drive({version: 'v3', auth});
+  const response = await drive.files.list({
+    q: `name='${SPREAD_SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet'`,
+    fields: 'files(id, name)',
+  });
+
+  const files = response.data.files;
+  if (files && files.length > 0) {
+    const sheetID = files[0].id!
+    const updateData = {
+      values: [
+        [guildID, channelID, newCadence]
+      ]
+  };
+    await sheetService.spreadsheets.values.update({
+        spreadsheetId: sheetID,
+        range: `${CADENCE_SHEET_NAME}!A1:C1`,
+        valueInputOption: 'RAW',
+        requestBody: updateData
+    });
+  } else {
+    //create new sheet file with newCadence
+    console.log("Creating new sheet...");
+    await createCadence({auth});
+    await updateCadence({auth, guildID, channelID, newCadence});
+  }
+  
+
+}
+
+/**
+ * Create new cadence sheet
+ *
+ *@param auth The Google authentication object.
+ */
+// TO-DO expand this to handle multiple guild+channel cadence
+export async function createCadence({
+  auth,
+}: {
+  auth: Auth.GoogleAuth,
+}): Promise<string>{
+  const sheetService = google.sheets({version: 'v4', auth});
+  try {
+    const spreadsheet = await sheetService.spreadsheets.create({
+      requestBody: {
+        properties: {
+          title: SPREAD_SHEET_NAME,
+        },
+        sheets: [
+          {
+            properties: {
+              title: CADENCE_SHEET_NAME, // Specify the title of the sheet
+            },
+            data: [
+              {
+                startRow: 0,
+                startColumn: 0,
+                rowData: [
+                  {
+                    values: [
+                      {userEnteredValue: {stringValue: "guildID"}}, // Column A Row 1, should store guildID
+                      {userEnteredValue: {stringValue: "channelID"}}, // Column B Row 1, should store channelID
+                      {userEnteredValue: {numberValue: 0}}  // Column C Row 1, should store cadence for newsletter
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      fields: 'spreadsheetId',
+      
+    });
+
+    await moveFormToFolder({
+      auth,
+      fileId: spreadsheet.data.spreadsheetId!,
+      folderId: SHARED_FOLDER_ID,
+      fileName: SPREAD_SHEET_NAME,
+    });
+    return spreadsheet.data.spreadsheetId!;
+  } catch (err) {
+    throw Error("Problem creating Spreadsheet");
+  }
+
+}
 
 /**
  * Creates a new Google Form with the specified title, questions, and description.
@@ -361,13 +505,20 @@ if (module === require.main) {
   // })
   //   .then(console.log)
   //   .catch(console.error);
-  getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID })
-    .then((form) => {
-      getFormattedResponses({ auth, form: form! })
-        .then((output) => {
-          console.log(JSON.stringify(output, null, 2));
-        })
-        .catch(console.error);
-    })
-    .catch(console.error);
+
+
+
+
+  // getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID })
+  //   .then((form) => {
+  //     getFormattedResponses({ auth, form: form! })
+  //       .then((output) => {
+  //         console.log(JSON.stringify(output, null, 2));
+  //       })
+  //       .catch(console.error);
+  //   })
+  //   .catch(console.error);
+
+  //updateCadence({auth, guildID: "guildID", channelID: "channelID", newCadence: 14})
+  getCadence({auth});
 }

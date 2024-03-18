@@ -3,7 +3,13 @@ import config from "../config.json";
 import fs from "fs";
 import path from "path";
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions
+  ]
+});
 client.commands = new Collection();
 
 const handlersDir = path.join(__dirname, "./handlers");
