@@ -1,0 +1,19 @@
+import * as jobs from "@/jobs/jobs";
+import { scheduleJob } from "@/jobs/cron";
+
+export function initJobs() {
+  // run this job every 1st and 3rd week of the month on Sunday at 9:00 AM
+  scheduleJob("createNextForm", "0 9 0 1-7,15-21 * 0", () => {
+    jobs.jobWrapper("createNextForm", jobs.createNextForm);
+  });
+
+  // run this job every 1st and 3rd week of the month on Sunday at 12:00 AM
+  scheduleJob("uploadCurrentIssue", "0 0 0 1-7,15-21 * 0", () => {
+    jobs.jobWrapper("uploadCurrentIssue", jobs.uploadCurrentIssue);
+  });
+
+  // run this job twice a week on Monday and Thursday at 9:00 AM
+  scheduleJob("reminder", "0 9 * * 1,4", () => {
+    jobs.jobWrapper("reminder", jobs.reminder);
+  });
+}

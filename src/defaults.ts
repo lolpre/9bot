@@ -1,5 +1,17 @@
 import { Question } from "./utils/types";
 
+export const NINE = [
+  "172475977450913792", // vincent
+  "205030030911209474", // kun
+  "206931252824113153", // kenen
+  "228017779511394304", // ethan
+  "237638386700124171", // julian
+  "261877058525724685", // jp
+  "339836144004890625", // dean
+  "455948790239723530", // boyu
+  "591424465183834124", // tango
+];
+
 export const NAME_QUESTION: Question = {
   author: "default",
   question: "🥺️👉👈 name pls",
