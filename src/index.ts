@@ -4,12 +4,12 @@ import fs from "fs";
 import path from "path";
 import { initJobs } from "@/jobs/index";
 
-const client = new Client({
+export const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.GuildMessageReactions
-  ]
+    GatewayIntentBits.GuildMessageReactions,
+  ],
 });
 client.commands = new Collection();
 
