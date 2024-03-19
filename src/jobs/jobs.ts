@@ -93,15 +93,17 @@ export async function reminder() {
   const nonParticipantsTags = nonParticipants.map(
     (nonParticipant) => "<@" + NINE_DIC[nonParticipant] + ">"
   );
-
-  const embed = new EmbedBuilder()
-    .setColor("#FF0000" as ColorResolvable)
-    .setTitle(`Get your shit in: `)
-    .setDescription(
-      `${nonParticipantsTags.join(",")}\n${mostRecentForm?.responderUri}`
-    )
-    .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
-  channel.send({ embeds: [embed] });
+  if (nonParticipants.length > 0) {
+    const embed = new EmbedBuilder()
+      .setColor("#FF0000" as ColorResolvable)
+      .setTitle(`Get your shit in: `)
+      .setDescription(
+        `${nonParticipantsTags.join(",")}\n${mostRecentForm?.responderUri}`
+      )
+      .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
+    channel.send({ embeds: [embed] });
+    console.log(nonParticipants);
+  }
 }
 
 export async function createNextForm() {

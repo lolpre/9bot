@@ -35,7 +35,7 @@ export function findClosestName(inputName: string, names: string[]): string {
       return "julian";
     case "vincent":
     case "vin":
-      return "vin";
+      return "vincent";
     case "sri":
     case "harsha":
     case "tango":
