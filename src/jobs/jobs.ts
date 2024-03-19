@@ -9,8 +9,9 @@ import {
 import { format } from "date-fns";
 import { uploadIssue } from "@/utils/github";
 import { client } from "@/index";
-import { TextChannel } from "discord.js";
-import { NINE } from "@/defaults";
+import { ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
+import { NINE, NINE_DIC } from "@/defaults";
+import { findClosestName } from "@/utils/namematch";
 
 const NEWSLETTER_CHANNEL_ID = "1216603509051359302";
 
@@ -36,10 +37,71 @@ export async function reminder() {
   const mostRecentForm = await getMostRecentForm({
     auth,
   });
+  const channel = client.channels.cache.get(
+    "1216973005066862673"
+  ) as TextChannel;
 
-  NINE.forEach(async (userId) => {
-    // if user has not filled out the form, send a reminder
-  });
+  const form = await getMostRecentForm({ auth });
+  if (!form) {
+    channel.send("No form created");
+    return;
+  }
+
+  const formResponses = await getFormattedResponses({ auth, form });
+  if (!formResponses) {
+    const embed = new EmbedBuilder()
+      .setColor("#FF0000" as ColorResolvable)
+      .setTitle(
+        `No one turned in anything yet, @everyone ${mostRecentForm?.responderUri}`
+      )
+      .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
+    channel.send({ embeds: [embed] });
+    return;
+  }
+
+  const allNames: string[] = [
+    "jp",
+    "joshy",
+    "korean",
+    "kenen",
+    "chromebook",
+    "nathan",
+    "naykun",
+    "boyu",
+    "alex",
+    "ethan",
+    "yeeb",
+    "julian",
+    "jthemage",
+    "j",
+    "vincent",
+    "vin",
+    "sri",
+    "harsha",
+    "tango",
+    "sandwich",
+    "dean",
+    "white",
+  ];
+
+  const participants = formResponses.map((response) =>
+    findClosestName(response.author!, allNames)
+  );
+  const nonParticipants = Object.keys(NINE_DIC).filter(
+    (item) => !participants.includes(item)
+  );
+  const nonParticipantsTags = nonParticipants.map(
+    (nonParticipant) => "<@" + NINE_DIC[nonParticipant] + ">"
+  );
+
+  const embed = new EmbedBuilder()
+    .setColor("#FF0000" as ColorResolvable)
+    .setTitle(`Get your shit in: `)
+    .setDescription(
+      `${nonParticipantsTags.join(",")}\n${mostRecentForm?.responderUri}`
+    )
+    .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
+  channel.send({ embeds: [embed] });
 }
 
 export async function createNextForm() {

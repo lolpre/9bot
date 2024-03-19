@@ -12,6 +12,18 @@ export const NINE = [
   "591424465183834124", // tango
 ];
 
+export const NINE_DIC: Record<string, string> = {
+  vincent: "172475977450913792",
+  kun: "205030030911209474",
+  kenen: "206931252824113153",
+  ethan: "228017779511394304",
+  julian: "237638386700124171",
+  jp: "261877058525724685",
+  dean: "339836144004890625",
+  boyu: "455948790239723530",
+  tango: "591424465183834124",
+};
+
 export const NAME_QUESTION: Question = {
   author: "default",
   question: "🥺️👉👈 name pls",
