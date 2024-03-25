@@ -14,6 +14,7 @@ import { NINE, NINE_DIC } from "@/defaults";
 import { findClosestName } from "@/utils/namematch";
 
 const NEWSLETTER_CHANNEL_ID = "1216603509051359302";
+const REMINDER_CHANNEL_ID = "1221680140405313536";
 
 export async function jobWrapper(name: string, fn: () => Promise<void>) {
   try {
@@ -37,9 +38,7 @@ export async function reminder() {
   const mostRecentForm = await getMostRecentForm({
     auth,
   });
-  const channel = client.channels.cache.get(
-    "1216973005066862673"
-  ) as TextChannel;
+  const channel = client.channels.cache.get(REMINDER_CHANNEL_ID) as TextChannel;
 
   const form = await getMostRecentForm({ auth });
   if (!form) {
