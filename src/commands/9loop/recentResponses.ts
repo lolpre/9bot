@@ -2,6 +2,7 @@ import {
   EmbedBuilder,
   SlashCommandBuilder,
   ChatInputCommandInteraction,
+  ColorResolvable,
 } from "discord.js";
 import {
   getMostRecentForm,
@@ -10,22 +11,32 @@ import {
 } from "@/utils/forms";
 import { FormResponse } from "@/utils/types";
 
-const createEmbed = (res: FormResponse) => {
-  const embed = new EmbedBuilder()
-    .setColor(0xff0077)
-    .setTitle(`${res.author}`)
-    .setAuthor({ name: "9bot" })
-    .setTimestamp()
-    .setFooter({ text: "9bot!!! 😼" });
+const colors: ColorResolvable[] = [
+  0xed8796, 0xee99a0, 0xf5a97f, 0xeed49f, 0xa6da95, 0x8bd5ca, 0x91d7e3,
+  0x7dc4e4, 0x8aadf4, 0xb7bdf8,
+];
 
-  for (const answers of res.answers) {
-    embed.addFields({
-      name: `${answers.question}`,
-      value: `${answers.answer}`,
+const createEmbed = (responses: FormResponse[]) => {
+  const embeds: { [key: string]: EmbedBuilder } = {};
+  let i = 0;
+
+  responses[0].answers.forEach((answer) => {
+    embeds[answer.questionId] = new EmbedBuilder()
+      .setColor(colors[i % colors.length])
+      .setTitle(`${answer.question}`);
+    i++;
+  });
+
+  responses.forEach((res) => {
+    res.answers.forEach((answer) => {
+      embeds[answer.questionId].addFields({
+        name: `${res.author}`,
+        value: `${answer.answer}`,
+      });
     });
-  }
+  });
 
-  return embed;
+  return Object["values"](embeds);
 };
 
 const printRecentResponses = {
@@ -49,9 +60,10 @@ const printRecentResponses = {
       await interaction.followUp("No responses found");
       return;
     }
-    for (const response of responses) {
-      await interaction.followUp({ embeds: [createEmbed(response)] });
-    }
+    // for (const response of responses) {
+    //   await interaction.followUp({ embeds: [createEmbed(response)] });
+    // }
+    await interaction.followUp({ embeds: createEmbed(responses) });
     return;
   },
 };
