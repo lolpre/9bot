@@ -8,15 +8,18 @@ import express, { Express, Request, Response } from "express";
 dotenv.config();
 
 const app: Express = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.get("/", (req: Request, res: Response) => {
   res.send("9bot application");
 });
 
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+const server = app.listen(port, () => {
+  console.log(`[server]: Server is running at port ${port}`);
 });
+
+server.keepAliveTimeout = 120 * 1000;
+server.headersTimeout = 120 * 1000;
 
 export const client = new Client({
   intents: [
