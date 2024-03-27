@@ -164,3 +164,19 @@ export async function uploadCurrentIssue() {
     );
   }
 }
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function renderLog() {
+  const date = new Date();
+  console.log("%s: I'm awake!", date);
+}
+
+export async function renderLog2() {
+  const date = new Date();
+  // waits 30 seconds
+  await delay(30000);
+  console.log("%s: I'm awake!", date);
+}
