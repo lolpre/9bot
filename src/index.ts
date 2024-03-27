@@ -3,8 +3,20 @@ import fs from "fs";
 import path from "path";
 import { initJobs } from "@/jobs/index";
 import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
 
 dotenv.config();
+
+const app: Express = express();
+const port = process.env.PORT || 3000;
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("9bot application");
+});
+
+app.listen(port, () => {
+  console.log(`[server]: Server is running at http://localhost:${port}`);
+});
 
 export const client = new Client({
   intents: [
