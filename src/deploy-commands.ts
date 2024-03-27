@@ -1,5 +1,4 @@
 import { REST, Routes } from "discord.js";
-import config from "../config.json";
 import fs from "fs";
 import path from "path";
 
@@ -29,7 +28,8 @@ for (const folder of commandFolders) {
 }
 
 // Construct and prepare an instance of the REST module
-const rest = new REST().setToken(config.token);
+const discord_token: string = process.env.DISCORD_TOKEN!;
+const rest = new REST().setToken(discord_token);
 
 // and deploy your commands!
 (async () => {
@@ -37,15 +37,17 @@ const rest = new REST().setToken(config.token);
     console.log(
       `Started refreshing ${commands.length} application (/) commands.`
     );
-
+    const client_id: string = process.env.CLIENT_ID!;
+    // let guild_id:string = process.env.GUILD_ID!;
     // The put method is used to fully refresh all commands in the guild with the current set
     const data: any = await rest.put(
       // Registers commands to a specific guild/server
       // (run if you want to register commands faster for testing purposes, and comment out the other line)
-      // Routes.applicationGuildCommands(config.clientId, config.guildId),
+      // Routes.applicationGuildCommands(client_id, guild_id),
 
       // Registers commands globally across all guilds/servers
-      Routes.applicationCommands(config.clientId),
+
+      Routes.applicationCommands(client_id),
 
       { body: commands }
     );

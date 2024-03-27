@@ -1,5 +1,4 @@
 import { Octokit } from "@octokit/rest";
-import config from "../../config.json";
 import { getAuth, getForm, getFormattedResponses } from "./forms";
 import { generateMarkdownFromResponses } from "./markdown";
 import { format } from "date-fns";
@@ -59,7 +58,7 @@ async function uploadFile({
     email: string;
   };
 }) {
-  const octokit = new Octokit({ auth: config.githubToken });
+  const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 
   const result = await octokit.repos.createOrUpdateFileContents({
     owner,
