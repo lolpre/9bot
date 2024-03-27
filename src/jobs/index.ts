@@ -16,4 +16,12 @@ export function initJobs() {
   scheduleJob("reminder", "0 0 9 * * mon,thu", () => {
     jobs.jobWrapper("reminder", jobs.reminder);
   });
+
+  // running this every 30 seconds to keep application online on Render
+  scheduleJob("renderLog", "*  *  * * *", () => {
+    jobs.jobWrapper("renderLog", jobs.renderLog);
+  });
+  scheduleJob("renderLog2", "*  *  * * *", () => {
+    jobs.jobWrapper("renderLog2", jobs.renderLog2);
+  });
 }
