@@ -2,13 +2,13 @@ import * as jobs from "@/jobs/jobs";
 import { scheduleJob } from "@/jobs/cron";
 
 export function initJobs() {
-  // run this job every 1st and 3rd week of the month on Sunday at 9:00 AM
-  scheduleJob("createNextForm", "0 0 9 1-7,15-21 * sun", () => {
+  // run this job on the 1st and 15th of each month at 9:00 AM
+  scheduleJob("createNextForm", "0 0 9 1,15 * *", () => {
     jobs.jobWrapper("createNextForm", jobs.createNextForm);
   });
 
-  // run this job every 1st and 3rd week of the month on Sunday at 12:00 AM
-  scheduleJob("uploadCurrentIssue", "0 0 0 1-7,15-21 * sun", () => {
+  // run this job on the 1st and 15th of each month at 12:00 AM
+  scheduleJob("uploadCurrentIssue", "0 0 0 1,15 * *", () => {
     jobs.jobWrapper("uploadCurrentIssue", jobs.uploadCurrentIssue);
   });
 
@@ -16,5 +16,4 @@ export function initJobs() {
   scheduleJob("reminder", "0 0 9 * * mon,thu", () => {
     jobs.jobWrapper("reminder", jobs.reminder);
   });
-  
 }

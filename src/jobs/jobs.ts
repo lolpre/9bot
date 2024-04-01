@@ -157,7 +157,7 @@ export async function uploadCurrentIssue() {
   });
 
   const channel = client.channels.cache.get(NEWSLETTER_CHANNEL_ID);
-  if (response.status === 200 && channel instanceof TextChannel) {
+  if (response && channel instanceof TextChannel) {
     // TODO: make this a cool embed
     channel.send(
       `New 9Loop Newsletter issue @everyone: https://lolpre.github.io/9bot/`
