@@ -102,6 +102,14 @@ export async function reminder() {
     );
     console.log(nonParticipants);
   }
+
+  // Dm everyone
+  nonParticipants.forEach((name: string) => {
+    const userId = NINE_DIC[name];
+    client.users.fetch(userId).then((user) => {
+      user.send(`Get your shit in!\n${mostRecentForm?.responderUri}`);
+    });
+  });
 }
 
 export async function createNextForm() {
