@@ -50,11 +50,10 @@ export async function reminder() {
   if (!formResponses) {
     const embed = new EmbedBuilder()
       .setColor("#FF0000" as ColorResolvable)
-      .setTitle(
-        `No one turned in anything yet, @everyone ${mostRecentForm?.responderUri}`
-      )
+      .setTitle(`No one turned in anything yet`)
       .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
     channel.send({ embeds: [embed] });
+    channel.send(`@everyone ${mostRecentForm?.responderUri}`);
     return;
   }
 
@@ -95,12 +94,12 @@ export async function reminder() {
   if (nonParticipants.length > 0) {
     const embed = new EmbedBuilder()
       .setColor("#FF0000" as ColorResolvable)
-      .setTitle(`Get your shit in: `)
-      .setDescription(
-        `${nonParticipantsTags.join(",")}\n${mostRecentForm?.responderUri}`
-      )
+      .setTitle(`Get your shit in!`)
       .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
     channel.send({ embeds: [embed] });
+    channel.send(
+      `${nonParticipantsTags.join(",")}\n${mostRecentForm?.responderUri}`
+    );
     console.log(nonParticipants);
   }
 }
