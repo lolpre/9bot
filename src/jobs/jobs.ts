@@ -12,6 +12,7 @@ import { client } from "@/index";
 import { ColorResolvable, EmbedBuilder, TextChannel } from "discord.js";
 import { NINE, NINE_DIC } from "@/defaults";
 import { findClosestName } from "@/utils/namematch";
+import { calculateDaysUntil1stOr15th } from "@/utils/remainingday";
 
 const NEWSLETTER_CHANNEL_ID = "1216603509051359302";
 const REMINDER_CHANNEL_ID = "1221680140405313536";
@@ -46,11 +47,15 @@ export async function reminder() {
     return;
   }
 
+  // calculate day until submission date
+  const daysUntil1stOr15th = calculateDaysUntil1stOr15th(new Date());
+
   const formResponses = await getFormattedResponses({ auth, form });
   if (!formResponses) {
     const embed = new EmbedBuilder()
       .setColor("#FF0000" as ColorResolvable)
       .setTitle(`No one turned in anything yet`)
+      .setDescription(`${daysUntil1stOr15th} days until due date!`)
       .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
     channel.send({ embeds: [embed] });
     channel.send(`@everyone ${mostRecentForm?.responderUri}`);
@@ -95,6 +100,7 @@ export async function reminder() {
     const embed = new EmbedBuilder()
       .setColor("#FF0000" as ColorResolvable)
       .setTitle(`Get your shit in!`)
+      .setDescription(`${daysUntil1stOr15th} days until due date!`)
       .setImage("https://c.tenor.com/uqoIIeQcPrwAAAAd/break-dancing-ass.gif");
     channel.send({ embeds: [embed] });
     channel.send(
@@ -107,7 +113,9 @@ export async function reminder() {
   nonParticipants.forEach((name: string) => {
     const userId = NINE_DIC[name];
     client.users.fetch(userId).then((user) => {
-      user.send(`Get your shit in!\n${mostRecentForm?.responderUri}`);
+      user.send(
+        `Get your shit in! ${daysUntil1stOr15th} days until due date!\n${mostRecentForm?.responderUri}`
+      );
     });
   });
 }
