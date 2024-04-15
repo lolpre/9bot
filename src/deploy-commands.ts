@@ -41,7 +41,7 @@ const rest = new REST().setToken(discord_token);
       `Started refreshing ${commands.length} application (/) commands.`
     );
     const client_id: string = process.env.CLIENT_ID!;
-    // let guild_id:string = process.env.GUILD_ID!;
+    const guild_id: string = process.env.GUILD_ID!;
     // The put method is used to fully refresh all commands in the guild with the current set
     const data: any = await rest.put(
       // Registers commands to a specific guild/server
@@ -49,7 +49,6 @@ const rest = new REST().setToken(discord_token);
       // Routes.applicationGuildCommands(client_id, guild_id),
 
       // Registers commands globally across all guilds/servers
-
       Routes.applicationCommands(client_id),
 
       { body: commands }

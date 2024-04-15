@@ -153,21 +153,26 @@ export async function getNthForm({
     q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.form' and trashed=false`,
     fields: "files(id, name, createdTime)",
     orderBy: "createdTime desc",
-    pageSize: n || 1, // Use n if defined, otherwise default to 1
+    pageSize: n ? undefined : 1, // no pagesize if n is defined since we don't know the total number of forms
   });
 
   if (
     filesResponse.data.files?.length &&
     filesResponse.data.files?.length > 0
   ) {
-    const recentForm = filesResponse.data.files[n ? n - 1 : 0]; // Use n-1 if defined, otherwise use 0
+    const totalForms = filesResponse.data.files.length;
+    if (n !== undefined && n > totalForms) {
+      console.error(`Only ${totalForms} forms found`);
+      return null;
+    }
+    const form = filesResponse.data.files[n ? totalForms - n : 0];
     console.log(
-      `Google Form ${n ? `#${n}` : "most recent"}: ${recentForm.name} (ID: ${
-        recentForm.id
+      `Google Form ${n ? `#${n}` : "most recent"}: ${form.name} (ID: ${
+        form.id
       })`
     );
-    if (recentForm.id) {
-      const formResponse = await forms.forms.get({ formId: recentForm.id });
+    if (form.id) {
+      const formResponse = await forms.forms.get({ formId: form.id });
       return formResponse.data;
     }
   }
@@ -521,7 +526,7 @@ if (module === require.main) {
 
   //updateCadence({auth, guildID: "guildID", channelID: "channelID", newCadence: 14})
   // getCadence({auth});
-  getNthForm({ auth })
+  getNthForm({ auth, n: 1 })
     .then((form) => {
       getFormattedResponses({ auth, form: form! })
         .then((output) => {

@@ -7,7 +7,7 @@
     "build": "npx tsc && npx tsc-alias",
     "start": "npm run build && node dist",
     "watch": "npx tsc -w && npx tsc-alias -w",
-    "deploy": "npm run build && node dist/deploy-commands.js",
+    "deploy": "npm run clean && npm run build && node dist/deploy-commands.js",
     "test": "echo 🤫🧏",
     "clean": "npx rimraf dist",
     "prepare": "simple-git-hooks"
