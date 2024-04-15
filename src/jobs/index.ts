@@ -12,8 +12,8 @@ export function initJobs() {
     jobs.jobWrapper("uploadCurrentIssue", jobs.uploadCurrentIssue);
   });
 
-  // run this job twice a week on Monday and Thursday at 9:00 AM
-  scheduleJob("reminder", "0 0 9 * * mon,thu", () => {
+  // run this job twice a week on Monday and Thursday at 8:00 AM
+  scheduleJob("reminder", "0 0 8 * * mon,thu", () => {
     jobs.jobWrapper("reminder", jobs.reminder);
   });
 }
