@@ -4,11 +4,7 @@ import {
   ChatInputCommandInteraction,
   ColorResolvable,
 } from "discord.js";
-import {
-  getMostRecentForm,
-  getFormattedResponses,
-  getAuth,
-} from "@/utils/forms";
+import { getNthForm, getFormattedResponses, getAuth } from "@/utils/forms";
 import { FormResponse } from "@/utils/types";
 
 const colors: ColorResolvable[] = [
@@ -50,7 +46,7 @@ const printRecentResponses = {
     await interaction.deferReply();
 
     const auth = getAuth();
-    const form = await getMostRecentForm({ auth });
+    const form = await getNthForm({ auth });
     if (!form) {
       await interaction.followUp("No form found");
       return;

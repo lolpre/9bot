@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
-import { getMostRecentForm, getAuth } from "@/utils/forms";
+import { getNthForm, getAuth } from "@/utils/forms";
 
 const getLink = {
   data: new SlashCommandBuilder()
@@ -10,7 +10,7 @@ const getLink = {
     await interaction.deferReply();
 
     const auth = getAuth();
-    const form = await getMostRecentForm({ auth });
+    const form = await getNthForm({ auth });
     if (!form || !form.responderUri) {
       await interaction.followUp("No forms found!");
       return;

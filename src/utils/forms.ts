@@ -130,12 +130,22 @@ export async function getFormattedResponses({
   });
 }
 
-export async function getMostRecentForm({
+/**
+ * Retrieves the nth form from the shared folder, or the most recent if n is undefined.
+ *
+ * @param auth The Google authentication object.
+ * @param folderId The ID of the folder.
+ * @param n The index of the form to retrieve, or undefined.
+ * @returns A promise that resolves to the nth form.
+ */
+export async function getNthForm({
   auth,
   folderId = SHARED_FOLDER_ID,
+  n,
 }: {
   auth: Auth.GoogleAuth;
   folderId?: string;
+  n?: number;
 }): Promise<forms_v1.Schema$Form | null> {
   const drive = google.drive({ version: "v3", auth });
   const forms = google.forms({ version: "v1", auth });
@@ -143,16 +153,18 @@ export async function getMostRecentForm({
     q: `'${folderId}' in parents and mimeType='application/vnd.google-apps.form' and trashed=false`,
     fields: "files(id, name, createdTime)",
     orderBy: "createdTime desc",
-    pageSize: 1, // We only want the most recent file
+    pageSize: n || 1, // Use n if defined, otherwise default to 1
   });
 
   if (
     filesResponse.data.files?.length &&
     filesResponse.data.files?.length > 0
   ) {
-    const recentForm = filesResponse.data.files[0];
+    const recentForm = filesResponse.data.files[n ? n - 1 : 0]; // Use n-1 if defined, otherwise use 0
     console.log(
-      `Most recent Google Form: ${recentForm.name} (ID: ${recentForm.id})`
+      `Google Form ${n ? `#${n}` : "most recent"}: ${recentForm.name} (ID: ${
+        recentForm.id
+      })`
     );
     if (recentForm.id) {
       const formResponse = await forms.forms.get({ formId: recentForm.id });
@@ -304,29 +316,26 @@ export async function getCadence({
   auth,
 }: {
   auth: Auth.GoogleAuth;
-}) : Promise<number> {
-  const sheetService = google.sheets({version: 'v4', auth});
-  const drive = google.drive({version: 'v3', auth});
+}): Promise<number> {
+  const sheetService = google.sheets({ version: "v4", auth });
+  const drive = google.drive({ version: "v3", auth });
   const response = await drive.files.list({
     q: `name='${SPREAD_SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet'`,
-    fields: 'files(id, name)',
+    fields: "files(id, name)",
   });
 
   const files = response.data.files;
   if (files && files.length > 0) {
-    const sheetID = files[0].id!
+    const sheetID = files[0].id!;
     const response = await sheetService.spreadsheets.values.get({
       spreadsheetId: sheetID,
       range: `${CADENCE_SHEET_NAME}!C1`,
-  });
+    });
     return parseInt(response.data.values?.[0]?.[0]); // response.data.values in the form of [[ cadence ]]
   } else {
     return 0;
   }
-
-
 }
-
 
 /**
  * Update the current cadence
@@ -341,42 +350,38 @@ export async function updateCadence({
   auth,
   newCadence,
   guildID,
-  channelID
+  channelID,
 }: {
   auth: Auth.GoogleAuth;
   newCadence: number;
   guildID: string;
   channelID: string;
 }) {
-  const sheetService = google.sheets({version: 'v4', auth});
-  const drive = google.drive({version: 'v3', auth});
+  const sheetService = google.sheets({ version: "v4", auth });
+  const drive = google.drive({ version: "v3", auth });
   const response = await drive.files.list({
     q: `name='${SPREAD_SHEET_NAME}' and mimeType='application/vnd.google-apps.spreadsheet'`,
-    fields: 'files(id, name)',
+    fields: "files(id, name)",
   });
 
   const files = response.data.files;
   if (files && files.length > 0) {
-    const sheetID = files[0].id!
+    const sheetID = files[0].id!;
     const updateData = {
-      values: [
-        [guildID, channelID, newCadence]
-      ]
-  };
+      values: [[guildID, channelID, newCadence]],
+    };
     await sheetService.spreadsheets.values.update({
-        spreadsheetId: sheetID,
-        range: `${CADENCE_SHEET_NAME}!A1:C1`,
-        valueInputOption: 'RAW',
-        requestBody: updateData
+      spreadsheetId: sheetID,
+      range: `${CADENCE_SHEET_NAME}!A1:C1`,
+      valueInputOption: "RAW",
+      requestBody: updateData,
     });
   } else {
     //create new sheet file with newCadence
     console.log("Creating new sheet...");
-    await createCadence({auth});
-    await updateCadence({auth, guildID, channelID, newCadence});
+    await createCadence({ auth });
+    await updateCadence({ auth, guildID, channelID, newCadence });
   }
-  
-
 }
 
 /**
@@ -388,9 +393,9 @@ export async function updateCadence({
 export async function createCadence({
   auth,
 }: {
-  auth: Auth.GoogleAuth,
-}): Promise<string>{
-  const sheetService = google.sheets({version: 'v4', auth});
+  auth: Auth.GoogleAuth;
+}): Promise<string> {
+  const sheetService = google.sheets({ version: "v4", auth });
   try {
     const spreadsheet = await sheetService.spreadsheets.create({
       requestBody: {
@@ -409,19 +414,18 @@ export async function createCadence({
                 rowData: [
                   {
                     values: [
-                      {userEnteredValue: {stringValue: "guildID"}}, // Column A Row 1, should store guildID
-                      {userEnteredValue: {stringValue: "channelID"}}, // Column B Row 1, should store channelID
-                      {userEnteredValue: {numberValue: 0}}  // Column C Row 1, should store cadence for newsletter
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
+                      { userEnteredValue: { stringValue: "guildID" } }, // Column A Row 1, should store guildID
+                      { userEnteredValue: { stringValue: "channelID" } }, // Column B Row 1, should store channelID
+                      { userEnteredValue: { numberValue: 0 } }, // Column C Row 1, should store cadence for newsletter
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
       },
-      fields: 'spreadsheetId',
-      
+      fields: "spreadsheetId",
     });
 
     await moveFormToFolder({
@@ -434,7 +438,6 @@ export async function createCadence({
   } catch (err) {
     throw Error("Problem creating Spreadsheet");
   }
-
 }
 
 /**
@@ -506,9 +509,6 @@ if (module === require.main) {
   //   .then(console.log)
   //   .catch(console.error);
 
-
-
-
   // getMostRecentForm({ auth, folderId: SHARED_FOLDER_ID })
   //   .then((form) => {
   //     getFormattedResponses({ auth, form: form! })
@@ -520,5 +520,14 @@ if (module === require.main) {
   //   .catch(console.error);
 
   //updateCadence({auth, guildID: "guildID", channelID: "channelID", newCadence: 14})
-  getCadence({auth});
+  // getCadence({auth});
+  getNthForm({ auth })
+    .then((form) => {
+      getFormattedResponses({ auth, form: form! })
+        .then((output) => {
+          console.log(JSON.stringify(output, null, 2));
+        })
+        .catch(console.error);
+    })
+    .catch(console.error);
 }

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
 import {
-  getMostRecentForm,
+  getNthForm,
   getFormattedResponses,
   getAuth,
   getNewQuestions,
@@ -9,10 +9,10 @@ import {
 } from "@/utils/forms";
 import { format } from "date-fns";
 
-const newIssue = {
+const newForm = {
   data: new SlashCommandBuilder()
-    .setName("new_issue")
-    .setDescription("Manually create a new newsletter isssue (test command)"),
+    .setName("new_form")
+    .setDescription("Manually create a new newsletter form"),
 
   async execute(interaction: ChatInputCommandInteraction) {
     await interaction.deferReply();
@@ -23,7 +23,7 @@ const newIssue = {
 
     const auth = getAuth();
 
-    const mostRecentForm = await getMostRecentForm({
+    const mostRecentForm = await getNthForm({
       auth,
     });
     if (mostRecentForm) {
@@ -53,4 +53,4 @@ const newIssue = {
   },
 };
 
-export default newIssue;
+export default newForm;

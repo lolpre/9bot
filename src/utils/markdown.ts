@@ -1,9 +1,4 @@
-import {
-  getAuth,
-  getForm,
-  getFormattedResponses,
-  getMostRecentForm,
-} from "./forms";
+import { getAuth, getForm, getFormattedResponses, getNthForm } from "./forms";
 import { FormResponse } from "./types";
 import { DEFAULT_QUESTIONS, PHOTO_QUESTION } from "@/defaults";
 

@@ -1,5 +1,5 @@
 import {
-  getMostRecentForm,
+  getNthForm,
   getFormattedResponses,
   getAuth,
   getNewQuestions,
@@ -36,12 +36,12 @@ export async function jobWrapper(name: string, fn: () => Promise<void>) {
 //should check if the form is filled out by x user and if not send a reminder
 export async function reminder() {
   const auth = getAuth();
-  const mostRecentForm = await getMostRecentForm({
+  const mostRecentForm = await getNthForm({
     auth,
   });
   const channel = client.channels.cache.get(REMINDER_CHANNEL_ID) as TextChannel;
 
-  const form = await getMostRecentForm({ auth });
+  const form = await getNthForm({ auth });
   if (!form) {
     channel.send("No form created");
     return;
@@ -126,7 +126,7 @@ export async function createNextForm() {
 
   const auth = getAuth();
 
-  const mostRecentForm = await getMostRecentForm({
+  const mostRecentForm = await getNthForm({
     auth,
   });
 
@@ -156,7 +156,7 @@ export async function createNextForm() {
 
 export async function uploadCurrentIssue() {
   const auth = getAuth();
-  const mostRecentForm = await getMostRecentForm({
+  const mostRecentForm = await getNthForm({
     auth,
   });
   if (!mostRecentForm) {
