@@ -6,13 +6,13 @@ export function calculateDaysUntil1stOr15th(currentDate: Date): number {
   const firstOfMonth = new Date(currentYear, currentMonth, 1);
   const fifteenthOfMonth = new Date(currentYear, currentMonth, 15);
 
-  // Check if it's already past 15th
-  if (currentDay > 15) {
+  // Check if it's already past or is 15th
+  if (currentDay >= 15) {
     return calculateDaysUntilNext(1, currentDate);
   }
 
-  // Check if it's already past 1st
-  if (currentDay > 1) {
+  // Check if it's already past or is 1st
+  if (currentDay >= 1) {
     return calculateDaysUntilNext(15, currentDate);
   }
 
