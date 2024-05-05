@@ -47,7 +47,8 @@ export const PLACEHOLDER_QUESTION: Question = {
 export const PHOTO_QUESTION: Question = {
   author: "default",
   question: "📸 Photo Wall",
-  description: "Enter the URL of an image to share.",
+  description:
+    "Enter the URL of an image to share. Try to get the actual image URL for best results.",
   type: "short", //"image", (image not supported by their api)
 };
 
