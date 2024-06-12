@@ -13,12 +13,12 @@ export function initJobs() {
   });
 
   // run this job twice a week on Monday and Thursday at 8:00 AM
-  scheduleJob("reminder", "0 0 8 * * mon,thu", () => {
+  scheduleJob("reminder", "* * * * *", () => {
     jobs.jobWrapper("reminder", jobs.reminder);
   });
 
   // run monthly (on 5th) to refresh previous-day-reminder date
-  scheduleJob("refreshPrevDayReminder", "0 0 20 5 * *", () => {
+  scheduleJob("refreshPrevDayReminder", "* * * * *", () => {
     jobs.jobWrapper("refreshPrevDayReminder", refreshPrevDayReminder);
   });
 }
